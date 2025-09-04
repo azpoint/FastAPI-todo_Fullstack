@@ -6,6 +6,7 @@ from app.database import SessionLocal
 from starlette import status
 from pydantic import BaseModel, Field
 
+
 router = APIRouter()
 
 
