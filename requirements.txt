@@ -1,6 +1,7 @@
 annotated-types==0.7.0
 anyio==4.10.0
 astroid==3.3.11
+bcrypt==4.3.0
 black==25.1.0
 certifi==2025.8.3
 click==8.2.1
@@ -24,6 +25,7 @@ mccabe==0.7.0
 mdurl==0.1.2
 mypy_extensions==1.1.0
 packaging==25.0
+passlib==1.7.4
 pathspec==0.12.1
 platformdirs==4.4.0
 psycopg2-binary==2.9.10
