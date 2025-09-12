@@ -144,3 +144,65 @@ def test_create_todo(test_todo):
     assert model.description == request_data.get("description")
     assert model.priority == request_data.get("priority")
     assert model.complete == request_data.get("complete")
+
+
+# Test for update todo
+def test_update_todo(test_todo):
+    user, todo = test_todo
+
+    request_data = {
+        "title": "Update todo!",
+        "description": "Update description",
+        "priority": 3,
+        "complete": False,
+    }
+
+    response = client.put(f"/todo/{todo.id}", json=request_data)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    db = TestingSessionLocal()
+
+    model = db.query(Todos).filter(Todos.id == todo.id).first()
+
+    assert model.title == request_data["title"]
+    assert model.description == request_data["description"]
+    assert model.priority == request_data["priority"]
+    assert model.complete == request_data["complete"]
+
+
+# Test for update todo not found
+def test_update_todo_not_found(test_todo):
+
+    request_data = {
+        "title": "Update todo!",
+        "description": "Update description",
+        "priority": 3,
+        "complete": False,
+    }
+
+    response = client.put(f"/todo/999", json=request_data)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Todo not found"}
+
+
+# Test for delete todo
+def test_delete_todo(test_todo):
+    user, todo = test_todo
+
+    response = client.delete(f"/todo/{todo.id}")
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    db = TestingSessionLocal()
+    model = db.query(Todos).filter(Todos.id == todo.id).first()
+
+    assert model is None
+
+
+# Test for delete todo not found
+def test_delete_todo(test_todo):
+
+    response = client.delete(f"/todo/999")
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Todo not found"}
