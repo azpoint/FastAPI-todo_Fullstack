@@ -111,8 +111,36 @@ def test_read_one_authenticated(test_todo):
     assert data["complete"] == todo.complete
 
 
+# Test for a single auth todo not found
 def test_read_one_authenticated_not_found():
     response = client.get("/todo/999")
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found"}
+
+
+# Test create todo
+def test_create_todo(test_todo):
+    user, todo = test_todo
+
+    request_data = {
+        "title": "New Todo!",
+        "description": "New description",
+        "priority": 5,
+        "complete": False,
+        "owner_id": user.id,
+    }
+
+    response = client.post("/todo/", json=request_data)
+    assert response.status_code == 201
+
+    created_todo = response.json()
+
+    db = TestingSessionLocal()
+
+    model = db.query(Todos).filter(Todos.id == created_todo["id"]).first()
+
+    assert model.title == request_data.get("title")
+    assert model.description == request_data.get("description")
+    assert model.priority == request_data.get("priority")
+    assert model.complete == request_data.get("complete")

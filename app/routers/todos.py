@@ -32,6 +32,18 @@ class TodoRequest(BaseModel):
     complete: bool
 
 
+class TodoResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    priority: int
+    complete: bool
+    owner_id: int
+
+    class ConfigDict:
+        orm_mode = True  # <-- This allows returning SQLAlchemy models directly
+
+
 # Router todo endpoints
 # Get all todos
 @router.get("/", status_code=status.HTTP_200_OK)
@@ -81,6 +93,9 @@ async def create_todo(
     # Adding the data to the DB
     db.add(todo_model)
     db.commit()
+    db.refresh(todo_model)
+
+    return todo_model
 
 
 # Update todo by ID with path params
