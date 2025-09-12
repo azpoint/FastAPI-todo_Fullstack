@@ -79,14 +79,12 @@ def test_todo():
     db.close()
 
 
-# Rest for a todo list
+# Test for all auth todo list
 def test_read_all_authenticated(test_todo):
     user, todo = test_todo
 
     response = client.get("/")
     assert response.status_code == status.HTTP_200_OK
-    print(user.__dict__)
-    print(todo.__dict__)
 
     data = response.json()
 
@@ -96,3 +94,25 @@ def test_read_all_authenticated(test_todo):
     assert data[0]["description"] == todo.description
     assert data[0]["priority"] == todo.priority
     assert data[0]["complete"] == todo.complete
+
+
+# Test for a single auth todo
+def test_read_one_authenticated(test_todo):
+    user, todo = test_todo
+
+    response = client.get(f"/todo/{todo.id}")
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data["title"] == todo.title
+    assert data["description"] == todo.description
+    assert data["priority"] == todo.priority
+    assert data["complete"] == todo.complete
+
+
+def test_read_one_authenticated_not_found():
+    response = client.get("/todo/999")
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Todo not found"}
