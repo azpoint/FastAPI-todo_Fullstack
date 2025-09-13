@@ -34,7 +34,7 @@ class Token(BaseModel):
 
 # JWT config
 SECRET_KEY = "577cbac60a39b328ec731b5d31475a27e40d5e3cad0600acc8584098bc9165bf"
-ALGORITH = "HS256"
+ALGORITHM = "HS256"
 
 # Bcrypt config
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -80,13 +80,13 @@ def create_access_token(
 
     encode.update({"exp": expires})
 
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITH)
+    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 # JWT decode token.
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITH])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
         username: str = payload.get("sub")
         user_id: int = payload.get("id")

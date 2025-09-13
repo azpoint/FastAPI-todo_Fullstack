@@ -12,7 +12,6 @@ def test_return_user(test_user):
 
     assert response.status_code == status.HTTP_200_OK
 
-    print(response.json())
     assert response.json()["username"] == test_user.username
     assert response.json()["email"] == test_user.email
     assert response.json()["first_name"] == test_user.first_name
