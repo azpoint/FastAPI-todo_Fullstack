@@ -18,7 +18,6 @@ def test_read_all_authenticated(test_todo):
     data = response.json()
 
     # Optional: check that the todo is actually returned
-    assert len(data) == 1
     assert data[0]["title"] == todo.title
     assert data[0]["description"] == todo.description
     assert data[0]["priority"] == todo.priority

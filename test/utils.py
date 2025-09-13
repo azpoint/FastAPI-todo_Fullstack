@@ -5,6 +5,7 @@ from app.main import app
 from fastapi.testclient import TestClient
 import pytest
 from app.models import Todos, Users
+from app.routers.auth import bcrypt_context
 
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:todoApp@localhost:5432/test_db"
 
@@ -68,6 +69,31 @@ def test_todo():
     yield user, todo
 
     db.query(Todos).delete()
+    db.query(Users).delete()
+    db.commit()
+    db.close()
+
+
+@pytest.fixture
+def test_user():
+    user = Users(
+        id=1,
+        email="test@mail.com",
+        username="sweet",
+        first_name="Sweet",
+        last_name="Doe",
+        hashed_password=bcrypt_context.hash("fakepassword"),
+        is_active=True,
+        role="admin",
+        phone_number="555-55-55",
+    )
+
+    db = TestingSessionLocal()
+    db.add(user)
+    db.commit()
+
+    yield user
+
     db.query(Users).delete()
     db.commit()
     db.close()
