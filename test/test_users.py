@@ -29,3 +29,21 @@ def test_update_passwrod_succsess(test_user):
     )
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+# Test update user password invalid
+def test_update_passwrod_unsuccessful(test_user):
+    response = client.put(
+        "/user/password",
+        json={"password": "wrong_password", "new_password": "newpassword"},
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json() == {"detail": "Error on password change"}
+
+
+# Test update user phone number
+def test_update_phone_number_success(test_user):
+    response = client.put("/user/phonenumber/2222222222")
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
