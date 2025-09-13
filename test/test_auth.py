@@ -3,11 +3,14 @@ from app.routers.auth import (
     get_db,
     authenticate_user,
     create_access_token,
+    get_current_user,
     SECRET_KEY,
     ALGORITHM,
 )
 from jose import jwt
 from datetime import timedelta
+import pytest
+from fastapi import HTTPException
 
 
 app.dependency_overrides[get_db] = overrride_get_db
@@ -49,3 +52,29 @@ def test_create_access_token():
     assert decoded_token["sub"] == username
     assert decoded_token["id"] == user_id
     assert decoded_token["role"] == role
+
+
+# Test get valid token with async
+@pytest.mark.asyncio
+async def test_get_curent_user_valid_token():
+
+    encode = {"sub": "testuser", "id": 1, "role": "admin"}
+    token = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    user = await get_current_user(token=token)
+
+    assert user == {"username": "testuser", "id": 1, "user_role": "admin"}
+
+
+# Test token payload
+@pytest.mark.asyncio
+async def test_get_current_user_missing_payload():
+    encode = {"role": "user"}
+
+    token = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    with pytest.raises(HTTPException) as excinfo:
+        await get_current_user(token=token)
+
+    assert excinfo.value.status_code == 401
+    assert excinfo.value.detail == "Could not validate user"
