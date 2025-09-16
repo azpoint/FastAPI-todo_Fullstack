@@ -12,7 +12,7 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 def test_read_all_authenticated(test_todo):
     user, todo = test_todo
 
-    response = client.get("/")
+    response = client.get("/todos")
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -28,7 +28,7 @@ def test_read_all_authenticated(test_todo):
 def test_read_one_authenticated(test_todo):
     user, todo = test_todo
 
-    response = client.get(f"/todo/{todo.id}")
+    response = client.get(f"/todos/todo/{todo.id}")
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -41,7 +41,7 @@ def test_read_one_authenticated(test_todo):
 
 # Test for a single auth todo not found
 def test_read_one_authenticated_not_found():
-    response = client.get("/todo/999")
+    response = client.get("/todos/todo/999")
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found"}
@@ -59,7 +59,7 @@ def test_create_todo(test_todo):
         "owner_id": user.id,
     }
 
-    response = client.post("/todo/", json=request_data)
+    response = client.post("/todos/todo/", json=request_data)
     assert response.status_code == 201
 
     created_todo = response.json()
@@ -85,7 +85,7 @@ def test_update_todo(test_todo):
         "complete": False,
     }
 
-    response = client.put(f"/todo/{todo.id}", json=request_data)
+    response = client.put(f"/todos/todo/{todo.id}", json=request_data)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     db = TestingSessionLocal()
@@ -108,7 +108,7 @@ def test_update_todo_not_found(test_todo):
         "complete": False,
     }
 
-    response = client.put(f"/todo/999", json=request_data)
+    response = client.put(f"/todos/todo/999", json=request_data)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found"}
 
@@ -117,7 +117,7 @@ def test_update_todo_not_found(test_todo):
 def test_delete_todo(test_todo):
     user, todo = test_todo
 
-    response = client.delete(f"/todo/{todo.id}")
+    response = client.delete(f"/todos/todo/{todo.id}")
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -130,7 +130,7 @@ def test_delete_todo(test_todo):
 # Test for delete todo not found
 def test_delete_todo(test_todo):
 
-    response = client.delete(f"/todo/999")
+    response = client.delete(f"/todos/todo/999")
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found"}
